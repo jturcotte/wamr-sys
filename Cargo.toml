@@ -1,6 +1,6 @@
 [package]
 name = "wamr-sys"
-version = "0.1.1"
+version = "1.2.0"
 authors = ["Rahul Thakoor <rahul.thakoor@gmail.com>"]
 edition = "2018"
 links = "iwasm"
