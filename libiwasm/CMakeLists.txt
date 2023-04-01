@@ -6,7 +6,9 @@ cmake_minimum_required (VERSION 2.8)
 project (iwasm)
 # set (CMAKE_VERBOSE_MAKEFILE 1)
 
-set (WAMR_BUILD_PLATFORM "linux")
+if (NOT DEFINED WAMR_BUILD_PLATFORM)
+  string (TOLOWER ${CMAKE_HOST_SYSTEM_NAME} WAMR_BUILD_PLATFORM)
+endif ()
 
 # Reset default linker flags
 set (CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
@@ -37,7 +39,8 @@ endif ()
 
 if (NOT DEFINED WAMR_BUILD_AOT)
   # Enable AOT by default.
-  set (WAMR_BUILD_AOT 1)
+  # TODO: Fix the build, this could be useful
+  set (WAMR_BUILD_AOT 0)
 endif ()
 
 if (NOT DEFINED WAMR_BUILD_JIT)
@@ -46,13 +49,13 @@ if (NOT DEFINED WAMR_BUILD_JIT)
 endif ()
 
 if (NOT DEFINED WAMR_BUILD_LIBC_BUILTIN)
-  # Enable libc builtin support by default
-  set (WAMR_BUILD_LIBC_BUILTIN 1)
+  # Disable libc builtin support by default
+  set (WAMR_BUILD_LIBC_BUILTIN 0)
 endif ()
 
 if (NOT DEFINED WAMR_BUILD_LIBC_WASI)
-  # Enable libc wasi support by default
-  set (WAMR_BUILD_LIBC_WASI 1)
+  # Disable libc wasi support by default
+  set (WAMR_BUILD_LIBC_WASI 0)
 endif ()
 
 if (NOT DEFINED WAMR_BUILD_FAST_INTERP)

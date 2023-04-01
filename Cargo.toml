@@ -16,3 +16,7 @@ libc = "0.2.0"
 cc = "1.0"
 cmake = "0.1"
 bindgen = "0.56"
+
+[features]
+default = ["std"]
+std = []
