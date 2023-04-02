@@ -119,7 +119,7 @@ include (${SHARED_DIR}/utils/uncommon/shared_uncommon.cmake)
 
 # target_link_libraries (iwasm vmlib ${LLVM_AVAILABLE_LIBS} -lm -ldl -lpthread)
 
-add_library (iwasm SHARED ${WAMR_RUNTIME_LIB_SOURCE})
+add_library (iwasm STATIC ${WAMR_RUNTIME_LIB_SOURCE})
 
 # install (TARGETS libiwasm DESTINATION lib)
 
