@@ -7,7 +7,6 @@ use std::{env, path::PathBuf};
 fn main() {
     let mut config = Config::new("libiwasm");
     let generator = config
-        .generator("Unix Makefiles")
         .define("CMAKE_BUILD_TYPE", "Release")
         // WAMR_BUILD_TARGET seems to want what we have in the first part of the target triple, in uppercase.
         .define("WAMR_BUILD_TARGET", env::var("TARGET").unwrap().split("-").next().unwrap().to_uppercase());
@@ -31,7 +30,6 @@ fn main() {
         "cargo:rustc-link-search=native={}",
         dst.join("build").display()
     );
-    println!("cargo:rustc-link-lib=iwasm");
     println!("cargo:rustc-link-lib=vmlib");
 
     let bindings = bindgen::Builder::default()

@@ -1,14 +1,20 @@
 # Copyright (C) 2019 Intel Corporation.  All rights reserved.
 # SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
 
-project (iwasm)
 # set (CMAKE_VERBOSE_MAKEFILE 1)
 
 if (NOT DEFINED WAMR_BUILD_PLATFORM)
   string (TOLOWER ${CMAKE_HOST_SYSTEM_NAME} WAMR_BUILD_PLATFORM)
 endif ()
+
+if (NOT WAMR_BUILD_PLATFORM STREQUAL "windows")
+  project (iwasm)
+else()
+  project (iwasm C ASM CXX)
+  enable_language (ASM_MASM)
+endif()
 
 # Reset default linker flags
 set (CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
@@ -90,12 +96,12 @@ endif ()
 set (WAMR_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../wasm-micro-runtime)
 
 include (${WAMR_ROOT_DIR}/build-scripts/runtime_lib.cmake)
+# vmlib/VMcore seems to be the static linkage version of iwasm, this is easier to embed.
 add_library(vmlib ${WAMR_RUNTIME_LIB_SOURCE})
 
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections -pie -fPIE")
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wformat -Wformat-security")
-# set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wconversion -Wsign-conversion")
 
 if (WAMR_BUILD_TARGET MATCHES "X86_.*" OR WAMR_BUILD_TARGET STREQUAL "AMD_64")
   if (NOT (CMAKE_C_COMPILER MATCHES ".*clang.*" OR CMAKE_C_COMPILER_ID MATCHES ".*Clang"))
@@ -103,26 +109,12 @@ if (WAMR_BUILD_TARGET MATCHES "X86_.*" OR WAMR_BUILD_TARGET STREQUAL "AMD_64")
   endif ()
 endif ()
 
-# The following flags are to enhance security, but it may impact performance,
-# we disable them by default.
-#if (WAMR_BUILD_TARGET MATCHES "X86_.*" OR WAMR_BUILD_TARGET STREQUAL "AMD_64")
-#  set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftrapv -D_FORTIFY_SOURCE=2")
-#endif ()
-#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fstack-protector-strong --param ssp-buffer-size=4")
-#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wl,-z,noexecstack,-z,relro,-z,now")
-
 include (${SHARED_DIR}/utils/uncommon/shared_uncommon.cmake)
 
-# add_executable (iwasm main.c ${UNCOMMON_SHARED_SOURCE})
-
-# install (TARGETS iwasm DESTINATION bin)
-
-# target_link_libraries (iwasm vmlib ${LLVM_AVAILABLE_LIBS} -lm -ldl -lpthread)
-
-add_library (iwasm STATIC ${WAMR_RUNTIME_LIB_SOURCE})
-
-# install (TARGETS libiwasm DESTINATION lib)
-
-# set_target_properties (libiwasm PROPERTIES OUTPUT_NAME iwasm)
-
-# target_link_libraries (libiwasm ${LLVM_AVAILABLE_LIBS} -lm -ldl -lpthread)
+if (WAMR_BUILD_PLATFORM STREQUAL "windows")
+  # Disable export macros for the static lib.
+  target_compile_definitions(vmlib PRIVATE WASM_API_EXTERN=)
+  # Append an empty generator expression to prevent config sub-directories to be used.
+  # https://stackoverflow.com/a/56201564/56315
+  set_target_properties(vmlib PROPERTIES ARCHIVE_OUTPUT_DIRECTORY $<0:>)
+endif()
