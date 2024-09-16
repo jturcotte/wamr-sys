@@ -43,6 +43,20 @@ if (NOT DEFINED WAMR_BUILD_INTERP)
   set (WAMR_BUILD_INTERP 1)
 endif ()
 
+# Those three together allow exception call stacks to be dumped
+if (NOT DEFINED WAMR_BUILD_THREAD_MGR)
+  # Enable Interpreter by default
+  set (WAMR_BUILD_THREAD_MGR 1)
+endif ()
+if (NOT DEFINED WAMR_BUILD_DUMP_CALL_STACK)
+  # Enable Interpreter by default
+  set (WAMR_BUILD_DUMP_CALL_STACK 1)
+endif ()
+if (NOT DEFINED WAMR_BUILD_CUSTOM_NAME_SECTION)
+  # Enable Interpreter by default
+  set (WAMR_BUILD_CUSTOM_NAME_SECTION 1)
+endif ()
+
 if (NOT DEFINED WAMR_BUILD_AOT)
   # Enable AOT by default.
   # TODO: Fix the build, this could be useful

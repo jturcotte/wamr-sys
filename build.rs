@@ -17,6 +17,10 @@ fn main() {
         // CMAKE_TOOLCHAIN_FILE=~/gba-toolchain/arm-gba-toolchain.cmake
         Err(env::VarError::NotPresent) => {
             generator.define("WAMR_BUILD_PLATFORM", "rust-no-std");
+            // Also disable call stacks dumping
+            generator.define("WAMR_BUILD_THREAD_MGR", "0");
+            generator.define("WAMR_BUILD_DUMP_CALL_STACK", "0");
+            generator.define("WAMR_BUILD_CUSTOM_NAME_SECTION", "0");
         }
         _ => (),
     };
